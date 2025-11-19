@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cartinha de Natal</title>
+  <style>
+    :root{--bg:#f6f8f6;--card:#fff;--accent:#b71c1c;--accent2:#1b5e20}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,#fff 0%,#f2f6f2 100%); margin:0; padding:24px; color:#222}
+    .app{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:20px}
+    header{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+    h1{margin:0;font-size:20px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+    label{display:block;font-weight:600;margin-top:10px;font-size:14px}
+    input[type=text], input[type=email], textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;margin-top:6px;font-size:14px}
+    textarea{min-height:140px;resize:vertical}
+    .small{font-size:13px;color:#555}
+    .images-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .thumb{width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid #e2e2e2;display:flex;align-items:center;justify-content:center;background:#fafafa}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{padding:10px 12px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+    button.secondary{background:var(--accent2)}
+    /* carta preview */
+    .paper-wrap{background:linear-gradient(180deg,#fff 0%,#fffbf5 100%);padding:28px;overflow:auto}
+    .carta{width:800px;max-width:100%;min-height:1120px;margin:0 auto;background:linear-gradient(180deg,#fff 0%,#fffefc 100%);padding:36px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);border:6px solid #ffeeda}
+    .carta header{display:flex;justify-content:space-between;align-items:center}
+    .carta h2{margin:0;color:var(--accent)}
+    .carta .meta{font-size:14px;color:#333}
+    .carta .message{margin-top:20px;font-size:18px;line-height:1.5;color:#222}
+    .carta .gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    .carta .gallery .gi{flex:1 1 calc(50% - 10px);height:160px;overflow:hidden;border-radius:10px}
+    .carta .gallery img{width:100%;height:100%;object-fit:cover}
+    .footer-note{margin-top:22px;font-size:13px;color:#444}
+    .hint{font-size:13px;color:#666;margin-top:8px}
+    .center{display:flex;gap:8px;align-items:center}
+    @media(max-width:900px){.app{grid-template-columns:1fr;}.carta{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='8' ry='8' width='40' height='40' fill='%23b71c1c'/><text x='50%' y='58%' font-size='20' font-family='sans-serif' fill='white' text-anchor='middle' dominant-baseline='middle'>🎄</text></svg>" alt="logo">
+      <div>
+        <h1>Cartinha de Natal — crie e baixe em PDF/HTML</h1>
+        <div class="small">Preencha nome, mensagem e envie até 10 fotos. Clique em "Gerar PDF" ou "Download HTML".</div>
+      </div>
+    </header>
+
+    <section class="panel">
+      <label for="name">Seu nome</label>
+      <input id="name" placeholder="Ex: Maria Silva" />
+
+      <label for="from">De (opcional)</label>
+      <input id="from" placeholder="Ex: Família Silva" />
+
+      <label for="to">Para (opcional)</label>
+      <input id="to" placeholder="Ex: João" />
+
+      <label for="email">Email (opcional)</label>
+      <input id="email" type="email" placeholder="seu@email.com" />
+
+      <label for="message">Mensagem / Carta</label>
+      <textarea id="message" placeholder="Escreva aqui a sua mensagem de Natal...">Que a magia do Natal ilumine seu coração com paz, amor e esperança. Que cada sorriso compartilhado renove seus sonhos e fortaleça sua fé. Que o ano que chega seja leve, doce e cheio de conquistas. Feliz Natal!</textarea>
+
+      <label for="photos">Fotos (até 10)</label>
+      <input id="photos" type="file" accept="image/*" multiple />
+      <div class="hint">Arraste/solte várias fotos ou use o botão. As imagens aparecerão na pré-visualização.</div>
+      <div class="images-preview" id="thumbs"></div>
+
+      <div class="controls">
+        <button id="update">Atualizar pré-visualização</button>
+        <button id="pdf">Gerar PDF</button>
+        <button id="downloadHtml" class="secondary">Download HTML</button>
+        <button id="clear" style="background:#999">Limpar</button>
+      </div>
+
+      <div class="small" style="margin-top:10px">Dica: espelhe o layout antes de gerar o PDF clicando em Atualizar.</div>
+    </section>
+
+    <section class="panel paper-wrap">
+      <div class="carta" id="carta">
+        <header>
+          <div>
+            <h2 id="cartaTitle">Feliz Natal!</h2>
+            <div class="meta" id="meta">Uma cartinha personalizada</div>
+          </div>
+          <div style="text-align:right">
+            <div class="meta">🎄 2025</div>
+          </div>
+        </header>
+
+        <div class="message" id="cartaMessage">Boas festas! Que seu Natal seja repleto de amor, alegria e paz.</div>
+
+        <div class="gallery" id="gallery"></div>
+
+        <div class="footer-note">Com carinho,<br><strong id="cartaFrom">[Seu nome aqui]</strong></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Dependências via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    // elementos
+    const nameInput = document.getElementById('name');
+    const fromInput = document.getElementById('from');
+    const toInput = document.getElementById('to');
+    const emailInput = document.getElementById('email');
+    const msgInput = document.getElementById('message');
+    const photosInput = document.getElementById('photos');
+    const thumbs = document.getElementById('thumbs');
+    const carta = document.getElementById('carta');
+    const cartaTitle = document.getElementById('cartaTitle');
+    const cartaMessage = document.getElementById('cartaMessage');
+    const cartaFrom = document.getElementById('cartaFrom');
+    const gallery = document.getElementById('gallery');
+    const updateBtn = document.getElementById('update');
+    const pdfBtn = document.getElementById('pdf');
+    const downloadHtmlBtn = document.getElementById('downloadHtml');
+    const clearBtn = document.getElementById('clear');
+
+    let images = [];
+
+    function readFiles(fileList){
+      const f = Array.from(fileList).slice(0,10);
+      images = [];
+      thumbs.innerHTML = '';
+      f.forEach((file, i)=>{
+        const reader = new FileReader();
+        reader.onload = (e)=>{
+          const url = e.target.result;
+          images.push(url);
+          const d = document.createElement('div'); d.className='thumb';
+          const img = document.createElement('img'); img.src = url; d.appendChild(img);
+          thumbs.appendChild(d);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    photosInput.addEventListener('change', (e)=> readFiles(e.target.files));
+
+    // Drag & drop simples na própria janela
+    document.body.addEventListener('dragover', (e)=>{ e.preventDefault(); });
+    document.body.addEventListener('drop', (e)=>{ e.preventDefault(); if(e.dataTransfer.files) readFiles(e.dataTransfer.files); });
+
+    function updatePreview(){
+      const name = nameInput.value.trim() || 'Amigo(a)';
+      const from = fromInput.value.trim() || nameInput.value.trim() || 'Um amigo';
+      const to = toInput.value.trim();
+      const email = emailInput.value.trim();
+      const msg = msgInput.value.trim() || 'Boas festas!';
+
+      cartaTitle.textContent = to ? `Para ${to}` : 'Feliz Natal!';
+      let meta = name;
+      if(email) meta += ' • ' + email;
+      document.getElementById('meta').textContent = meta;
+      cartaMessage.textContent = msg;
+      cartaFrom.textContent = from;
+
+      // gallery
+      gallery.innerHTML = '';
+      // se nenhuma imagem, mostra uma ilustração simples
+      if(images.length === 0){
+        gallery.innerHTML = `<div style="width:100%;text-align:center;color:#6b6b6b;padding:30px;border-radius:8px;background:#fffbe6">Nenhuma imagem adicionada. Adicione até 10 imagens para enfeitar sua cartinha.</div>`;
+      } else {
+        images.slice(0,10).forEach(url=>{
+          const gi = document.createElement('div'); gi.className='gi';
+          const img = document.createElement('img'); img.src = url; gi.appendChild(img);
+          gallery.appendChild(gi);
+        });
+      }
+    }
+
+    updateBtn.addEventListener('click', updatePreview);
+    // atualização ao digitar
+    [nameInput,fromInput,toInput,emailInput,msgInput].forEach(el=>el.addEventListener('input', ()=>{/* não polui a UI */}));
+
+    // gerar PDF usando html2canvas + jsPDF
+    pdfBtn.addEventListener('click', async ()=>{
+      updatePreview();
+      // usa html2canvas para capturar
+      const scale = 2; // melhora qualidade
+      const rect = carta.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const canvas = await html2canvas(carta, {scale, useCORS:true, scrollY:-window.scrollY});
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+      const { jsPDF } = window.jspdf;
+      // formato A4 em px (pt) -> usar mm ou pt: jsPDF can use 'px' if set, but easier: use 'p' and 'mm'
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // ajustar a imagem ao pdf mantendo proporção, dividir em páginas se necessário
+      const imgProps = { width: canvas.width, height: canvas.height };
+      const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
+      const imgW = imgProps.width * ratio;
+      const imgH = imgProps.height * ratio;
+
+      // se ultrapassar uma página, cortar verticalmente em fatias
+      if(imgH <= pdfHeight){
+        pdf.addImage(imgData, 'JPEG', (pdfWidth - imgW) / 2, 20, imgW, imgH);
+      } else {
+        // dividir em seções
+        let remainingHeight = imgProps.height;
+        let position = 0;
+        const pageCanvas = document.createElement('canvas');
+        const pageCtx = pageCanvas.getContext('2d');
+        pageCanvas.width = imgProps.width;
+        pageCanvas.height = Math.floor((pdfHeight / ratio));
+
+        while(remainingHeight > 0){
+          pageCtx.clearRect(0,0,pageCanvas.width,pageCanvas.height);
+          pageCtx.drawImage(canvas, 0, position, pageCanvas.width, pageCanvas.height, 0, 0, pageCanvas.width, pageCanvas.height);
+          const pieceData = pageCanvas.toDataURL('image/jpeg', 0.95);
+          if(position > 0) pdf.addPage();
+          pdf.addImage(pieceData, 'JPEG', (pdfWidth - imgW)/2, 20, imgW, pageCanvas.height * ratio);
+          position += pageCanvas.height;
+          remainingHeight -= pageCanvas.height;
+        }
+      }
+
+      const safeName = (nameInput.value.trim() || 'cartinha').replace(/[^a-z0-9_-]/gi,'_');
+      pdf.save(`${safeName}_cartinha_natal.pdf`);
+    });
+
+    // download HTML da carta (gera um arquivo .html com o conteúdo da carta)
+    downloadHtmlBtn.addEventListener('click', ()=>{
+      updatePreview();
+      const wrapper = document.createElement('html');
+      const dochtml = `<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Cartinha</title><style>body{font-family:Inter,Arial,Helvetica,sans-serif;padding:24px;background:#fff} .carta{max-width:800px;margin:0 auto;padding:36px;border-radius:12px;border:6px solid #ffeeda;background:#fff}</style></head><body>${carta.outerHTML}</body></html>`;
+      const blob = new Blob([dochtml], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = (nameInput.value.trim() || 'cartinha') + '_cartinha_natal.html'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    clearBtn.addEventListener('click', ()=>{
+      nameInput.value = '';
+      fromInput.value = '';
+      toInput.value = '';
+      emailInput.value = '';
+      msgInput.value = 'Boas festas! Que seu Natal seja repleto de amor, alegria e paz.';
+      photosInput.value = null;
+      images = [];
+      thumbs.innerHTML = '';
+      updatePreview();
+    });
+
+    // atualiza ao carregar
+    updatePreview();
+  </script>
+</body>
+</html>
