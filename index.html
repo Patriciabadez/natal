@@ -1,751 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Cartinha de Natal Animada</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root{
-            /* Cores de Natal */
-            --bg-dark: #0a160a; /* Verde Escuro ainda mais profundo */
-            --bg-light: #f7f9f7;
-            --card-bg: #fff;
-            --accent: #d32f2f; /* Vermelho Vivo um pouco mais escuro */
-            --accent2: #388e3c; /* Verde Esmeralda um pouco mais escuro */
-            --paper-color: #fffaf0; /* Cor de papel mais quente */
-            --envelope-main: #c62828; /* Vermelho do envelope */
-            --envelope-flap: #e57373; /* Aba mais clara */
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cartinha — Natal Encantado</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg1:#081226;--red:#c62828;--green:#197b30;--paper:#fffdf6;--accent:#f2c94c}
+  *{box-sizing:border-box}body{margin:0;font-family:Poppins,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#02101b 0%,var(--bg1) 100%);color:#fff;padding:26px;min-height:100vh}
+  .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:22px}
+  header{grid-column:1/-1;display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--red),#ff6f61);display:flex;align-items:center;justify-content:center;font-size:22px}
+  header h1{margin:0;font-size:20px}
+  .panel{background:linear-gradient(180deg,#fff,#fffefb);padding:20px;border-radius:12px;color:#111}
+  label{display:block;margin-top:10px;font-weight:600}
+  input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
+  textarea{min-height:150px}
+  .images-preview{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .thumb{width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid rgba(0,0,0,0.06)}
+  .controls{display:flex;gap:12px;margin-top:12px}
+  button{padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  #viewB{background:linear-gradient(180deg,var(--red),#b71c1c);color:#fff}
+  button.secondary{background:linear-gradient(180deg,var(--green),#1b6b2b);color:#fff}
+  #clearB{background:#777;color:#fff}
 
-        /* ---------------------------------------------------- */
-        /* EFEITO DE FUNDO ANIMADO (Estrelas/Partículas com mais movimento) */
-        /* ---------------------------------------------------- */
-        body {
-            font-family: 'Inter', system-ui, Segoe UI, Roboto, Arial;
-            background: var(--bg-dark);
-            background-image:
-                radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-                radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-            background-size: 50px 50px, 80px 80px;
-            background-position: 0 0, 40px 40px;
-            animation: moveStars 60s linear infinite; /* Animação para o fundo */
-            margin: 0;
-            padding: 24px;
-            color: #222;
-            min-height: 100vh;
-            overflow-x: hidden; /* Evita scroll horizontal indesejado */
-        }
+  /* overlay e neve */
+  .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,20,0.85);z-index:900;visibility:hidden;opacity:0;transition:opacity .35s,visibility .35s;padding:18px}
+  .overlay.is-active{visibility:visible;opacity:1}
+  .snow{pointer-events:none;position:fixed;inset:0;z-index:999;overflow:hidden}
+  .snow i{position:absolute;top:-10px;background:rgba(255,255,255,0.9);width:8px;height:8px;border-radius:50%;opacity:.8;animation:fall linear infinite;filter:blur(.3px)}
+  @keyframes fall{to{transform:translateY(120vh)}}
 
-        @keyframes moveStars {
-            from { background-position: 0 0, 40px 40px; }
-            to { background-position: 1000px 1000px, 1600px 1600px; }
-        }
+  .card{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.6);width:820px;max-width:96%;max-height:90vh;background:var(--paper);padding:34px;border-radius:14px;border:10px solid var(--red);box-shadow:0 30px 80px rgba(0,0,0,0.5);opacity:0;transition:all .6s .75s;overflow:auto;z-index:950;color:#111}
+  .overlay.open .card{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .paper-surface{background-image:radial-gradient(circle at 10% 10%, rgba(255,255,240,0.5) 1px, transparent 1px);padding:14px;border-radius:8px}
+  .card header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px dashed rgba(0,0,0,0.06);padding-bottom:10px;margin-bottom:16px}
+  .card h2{font-family:'Great Vibes',cursive;font-size:44px;margin:0;color:var(--red)}
+  .message{font-size:18px;line-height:1.7;color:#222;white-space:pre-wrap}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:16px}
+  .gi{height:140px;border-radius:10px;overflow:hidden}
+  .gi img{width:100%;height:100%;object-fit:cover}
 
-        .app {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 20px;
-        }
-        header {
-            grid-column: 1/-1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--bg-light);
-        }
-        h1 {
-            margin: 0;
-            font-size: 28px; /* Fonte maior para o título */
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .small {
-            font-size: 14px;
-            color: #ccc;
-        }
+  .close{position:absolute;right:22px;top:18px;background:var(--red);color:#fff;border-radius:999px;width:46px;height:46px;border:0;cursor:pointer}
 
-        /* Painel de Formulário */
-        .panel {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .panel:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-top: 15px;
-            font-size: 15px;
-            color: #333;
-        }
-        input[type=text], input[type=email], textarea, input[type=file] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin-top: 6px;
-            font-size: 15px;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        input:focus, textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 8px rgba(211, 47, 47, 0.3); /* Usando o valor de --accent */
-            outline: none;
-        }
-        textarea {
-            min-height: 140px;
-            resize: vertical;
-        }
-        .images-preview{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .thumb{
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid var(--accent2);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fafafa;
-        }
-        .thumb img{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .controls{
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        button{
-            padding: 12px 18px;
-            border-radius: 8px;
-            border: 0;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.1s;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-        }
-        /* Botão principal: Visualizar Animado */
-        button#viewAnimated {
-            background: var(--accent);
-            color: white;
-            font-size: 16px;
-        }
-        button#viewAnimated:hover {
-            background: #b71c1c;
-            transform: translateY(-2px);
-        }
-        button.secondary {
-            background: var(--accent2);
-            color: white;
-        }
-        button.secondary:hover {
-            background: #2e7d32;
-            transform: translateY(-2px);
-        }
-        button#clear {
-            background: #757575;
-            color: white;
-        }
-        button#clear:hover {
-            background: #616161;
-            transform: translateY(-2px);
-        }
-        .hint{
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        /* ---------------------------------------------------- */
-        /* VISUALIZAÇÃO DA CARTA E ANIMAÇÃO - O NOVO MODELO */
-        /* ---------------------------------------------------- */
-
-        /* Esconde a seção de preview que não será mais usada diretamente */
-        .paper-wrap {
-            display: none;
-        }
-
-        .carta-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Fundo escuro */
-            z-index: 1000;
-            display: flex; /* Sempre flex para centralizar */
-            justify-content: center;
-            align-items: center;
-            perspective: 1200px; /* Para efeito 3D */
-            overflow-y: auto;
-            opacity: 0; /* Inicia invisível */
-            visibility: hidden; /* Esconde do fluxo de layout */
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .carta-overlay.is-active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .envelope-container {
-            position: relative;
-            width: 450px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform-style: preserve-3d;
-            transition: transform 1.5s ease-in-out;
-            z-index: 1; /* Garante que o envelope esteja na frente inicialmente */
-        }
-
-        .envelope-shell {
-            width: 100%;
-            height: 100%;
-            background: var(--envelope-main);
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
-            z-index: 1;
-        }
-
-        .envelope-shell::before { /* Aba superior do envelope */
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            background: var(--envelope-flap);
-            clip-path: polygon(0 0, 100% 0, 50% 100%);
-            transform-origin: top;
-            transition: transform 1s ease;
-            z-index: 2;
-        }
-
-        /* Carta dentro do envelope - inicialmente oculta */
-        .letter-in-envelope {
-            position: absolute;
-            top: 10%;
-            width: 90%;
-            height: 80%;
-            background: var(--paper-color);
-            border-radius: 8px;
-            z-index: 0; /* Abaixo da aba */
-            transform: translateY(0px) scale(0.95);
-            transition: transform 1s ease-out 0.5s, opacity 0.5s 0.5s;
-            opacity: 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Animação: Envelope abrindo */
-        .carta-overlay.open .envelope-shell::before {
-            transform: rotateX(180deg) translateY(-2px); /* Aba se abre */
-            background: #5a5a5a; /* Cor escura ao abrir */
-        }
-
-        /* Animação: Carta saindo do envelope */
-        .carta-overlay.open .letter-in-envelope {
-            transform: translateY(-80px) scale(1.0); /* Sobe um pouco */
-            opacity: 1;
-            transition-delay: 1s; /* Atraso para depois da aba abrir */
-        }
-
-        /* A carta grande que aparece na tela */
-        .main-carta {
-            position: fixed; /* Fixa na tela */
-            top: 50%;
-            left: 50%;
-            width: 800px;
-            max-width: 90%;
-            max-height: 90vh;
-            background: var(--paper-color);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
-            border: 8px solid var(--accent); /* Borda mais festiva */
-            box-sizing: border-box;
-            transform: translate(-50%, -50%) scale(0.5); /* Começa pequena */
-            opacity: 0;
-            transition: transform 1s ease-out 1.5s, opacity 0.8s ease-out 1.5s; /* Atraso para depois da animação do envelope */
-            z-index: 1001; /* Acima do envelope */
-            overflow-y: auto;
-        }
-
-        .carta-overlay.open .main-carta {
-            transform: translate(-50%, -50%) scale(1); /* Expande para o tamanho normal */
-            opacity: 1;
-        }
-
-        /* Esconde o envelope depois que a carta aparece */
-        .carta-overlay.open .envelope-container {
-            opacity: 0;
-            transition: opacity 0.5s ease 2s; /* Desaparece depois da carta aparecer */
-        }
-        
-        /* Estilos Internos da Carta */
-        .main-carta header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px dashed #ddd;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .main-carta h2 {
-            margin: 0;
-            font-family: 'Great Vibes', cursive; /* Fonte mais elegante */
-            font-size: 38px; /* Maior ainda */
-            color: var(--accent);
-            font-weight: 400;
-        }
-        .main-carta .meta {
-            font-size: 15px;
-            color: #555;
-            margin-top: 5px;
-        }
-        .main-carta .message {
-            margin-top: 20px;
-            font-size: 19px; /* Um pouco maior */
-            line-height: 1.65;
-            color: #222;
-            white-space: pre-wrap; /* Mantém quebras de linha do textarea */
-        }
-        .main-carta .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
-        }
-        .main-carta .gallery .gi{
-            height: 160px;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .main-carta .gallery img{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        .main-carta .gallery img:hover {
-            transform: scale(1.05);
-        }
-        .footer-note {
-            margin-top: 30px;
-            font-size: 17px;
-            color: #444;
-            padding-top: 15px;
-            border-top: 1px dotted #ccc;
-        }
-
-        /* Botão de Fechar */
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--accent);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: 700;
-            cursor: pointer;
-            z-index: 1010;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.5s 2s ease, transform 0.5s 2s ease; /* Atraso para aparecer */
-        }
-        .close-btn:hover {
-            background: #b71c1c;
-            transform: scale(1);
-        }
-        .carta-overlay.open .close-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Botões de Ação dentro da carta aberta */
-        .carta-action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px dashed #eee;
-        }
-
-        @media(max-width:900px){
-            .app{
-                grid-template-columns: 1fr;
-            }
-            .carta-overlay {
-                padding: 10px;
-            }
-            .main-carta {
-                padding: 20px;
-                width: 100%;
-                max-width: 95%;
-                margin: 0;
-            }
-            .envelope-container {
-                width: 300px;
-                height: 200px;
-            }
-             .main-carta h2 {
-                font-size: 28px;
-            }
-             .main-carta .message {
-                font-size: 16px;
-            }
-             .main-carta .gallery {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            }
-             .main-carta .gallery .gi {
-                height: 100px;
-            }
-            .close-btn {
-                top: 10px;
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 18px;
-            }
-        }
-    </style>
+  @media(max-width:920px){.wrap{grid-template-columns:1fr}.card{padding:20px}.card h2{font-size:32px}}
+</style>
 </head>
 <body>
-    <div class="app">
-        <header>
-            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect rx='8' ry='8' width='40' height='40' fill='%23d32f2f'/><text x='50%' y='58%' font-size='20' font-family='sans-serif' fill='white' text-anchor='middle' dominant-baseline='middle'>💌</text></svg>" alt="logo">
-            <div>
-                <h1>Cartinha de Natal Animada</h1>
-                <div class="small">Preencha nome, mensagem e envie até 10 fotos.</div>
-            </div>
-        </header>
-
-        <section class="panel">
-            <label for="name">Seu nome</label>
-            <input id="name" placeholder="Ex: Maria Silva" />
-
-            <label for="from">De (opcional)</label>
-            <input id="from" placeholder="Ex: Família Silva" />
-
-            <label for="to">Para (opcional)</label>
-            <input id="to" placeholder="Ex: João" />
-
-            <label for="email">Email (opcional)</label>
-            <input id="email" type="email" placeholder="seu@email.com" />
-
-            <label for="message">Mensagem / Carta</label>
-            <textarea id="message" placeholder="Escreva aqui a sua mensagem de Natal...">Que a magia do Natal ilumine seu coração com paz, amor e esperança. Que cada sorriso compartilhado renove seus sonhos e fortaleça sua fé. Que o ano que chega seja leve, doce e cheio de conquistas. Feliz Natal!</textarea>
-
-            <label for="photos">Fotos (até 10)</label>
-            <input id="photos" type="file" accept="image/*" multiple />
-            <div class="hint">Arraste/solte ou use o botão. As imagens aparecerão na pré-visualização.</div>
-            <div class="images-preview" id="thumbs"></div>
-
-            <div class="controls">
-                <button id="viewAnimated">Visualizar Carta Animada 💌</button>
-                <button id="clear">Limpar</button>
-            </div>
-
-            <div class="small" style="margin-top:10px">A visualização animada reflete 100% o conteúdo atualizado.</div>
-        </section>
-
-        </div>
-
-    <div class="carta-overlay" id="carta-overlay">
-        <div class="close-btn" id="close-btn">X</div>
-
-        <div class="envelope-container">
-            <div class="envelope-shell">
-                <div class="letter-in-envelope"></div>
-            </div>
-        </div>
-
-        <div class="main-carta" id="main-carta">
-            <div class="carta-content">
-                </div>
-            <div class="carta-action-buttons">
-                <button id="pdf" class="secondary">Gerar PDF</button>
-                <button id="downloadHtml" class="secondary">Download HTML</button>
-            </div>
-        </div>
+<div class="wrap">
+  <header>
+    <div class="logo">🎄</div>
+    <div>
+      <h1>Cartinha — Natal Encantado</h1>
+      <div class="sub">Ilustrações, neve animada e cores vibrantes.</div>
     </div>
+  </header>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <section class="panel">
+    <label for="nameB">Seu nome</label>
+    <input id="nameB" placeholder="Ex: Ana" />
+    <label for="fromB">De (opcional)</label>
+    <input id="fromB" placeholder="Ex: Família" />
+    <label for="toB">Para (opcional)</label>
+    <input id="toB" placeholder="Ex: Pedro" />
+    <label for="msgB">Mensagem / Carta</label>
+    <textarea id="msgB">Que o espírito natalino traga alegria e luz. Boas festas!</textarea>
+    <label for="photosB">Fotos (até 10)</label>
+    <input id="photosB" type="file" accept="image/*" multiple />
+    <div class="images-preview" id="thumbsB"></div>
+    <div class="controls"><button id="viewB">Visualizar ✨</button><button id="clearB">Limpar</button></div>
+  </section>
 
-    <script>
-        // elementos
-        const nameInput = document.getElementById('name');
-        const fromInput = document.getElementById('from');
-        const toInput = document.getElementById('to');
-        const emailInput = document.getElementById('email');
-        const msgInput = document.getElementById('message');
-        const photosInput = document.getElementById('photos');
-        const thumbs = document.getElementById('thumbs');
-        
-        const cartaOverlay = document.getElementById('carta-overlay');
-        const mainCarta = document.getElementById('main-carta');
-        const cartaContent = mainCarta.querySelector('.carta-content');
-        const letterInEnvelope = document.querySelector('.letter-in-envelope'); 
+  <div class="overlay" id="overlayB" aria-hidden="true">
+    <!-- neve -->
+    <div class="snow" id="snowB"></div>
+    <button class="close" id="closeB">✕</button>
 
-        const viewAnimatedBtn = document.getElementById('viewAnimated');
-        const pdfBtn = document.getElementById('pdf');
-        const downloadHtmlBtn = document.getElementById('downloadHtml');
-        const clearBtn = document.getElementById('clear');
-        const closeBtn = document.getElementById('close-btn');
+    <div class="card" id="cardB" role="dialog" aria-modal="true">
+      <div class="paper-surface" id="contentB"></div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:18px">
+        <button id="pdfB" class="secondary">Gerar PDF</button>
+        <button id="htmlB" class="secondary">Download HTML</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        let images = [];
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  const nameB = document.getElementById('nameB'), fromB = document.getElementById('fromB'), toB = document.getElementById('toB'),
+        msgB = document.getElementById('msgB'), photosB = document.getElementById('photosB'), thumbsB = document.getElementById('thumbsB');
+  const overlay = document.getElementById('overlayB'), content = document.getElementById('contentB'), snow = document.getElementById('snowB');
+  const view = document.getElementById('viewB'), close = document.getElementById('closeB'), pdfBtn = document.getElementById('pdfB'), htmlBtn = document.getElementById('htmlB'), clearBtn = document.getElementById('clearB');
+  let imgsB = [];
 
-        function readFiles(fileList){
-            const f = Array.from(fileList).slice(0,10);
-            images = [];
-            thumbs.innerHTML = '';
-            f.forEach((file)=>{
-                const reader = new FileReader();
-                reader.onload = (e)=>{
-                    const url = e.target.result;
-                    images.push(url);
-                    const d = document.createElement('div'); d.className='thumb';
-                    const img = document.createElement('img'); img.src = url; d.appendChild(img);
-                    thumbs.appendChild(d);
-                };
-                reader.readAsDataURL(file);
-            });
+  photosB.addEventListener('change', e=> readFiles(e.target.files, imgsB, thumbsB));
+  document.body.addEventListener('dragover', e=> e.preventDefault());
+  document.body.addEventListener('drop', e=> { e.preventDefault(); if(e.dataTransfer.files) readFiles(e.dataTransfer.files, imgsB, thumbsB); });
+
+  function readFiles(list, arr, thumbsEl){ const f = Array.from(list).slice(0,10); arr.splice(0); thumbsEl.innerHTML=''; f.forEach(file=>{ const r=new FileReader(); r.onload=e=>{ arr.push(e.target.result); const d=document.createElement('div'); d.className='thumb'; const i=document.createElement('img'); i.src=e.target.result; d.appendChild(i); thumbsEl.appendChild(d); }; r.readAsDataURL(file); }); }
+
+  function generateHTML(){
+    const n = (nameB.value||'Amigo(a)').trim(), fr=(fromB.value||n).trim(), t=(toB.value||'').trim(), m=(msgB.value||'Boas festas!').trim();
+    const title = t ? `Para meu querido(a) ${t}` : 'Feliz Natal!';
+    const meta = n;
+    let gallery='';
+    if(imgsB.length===0) gallery = `<div style="padding:20px;border-radius:8px;background:#fffdef;border:1px dashed #ffeabb;color:#b87f28;text-align:center">Nenhuma imagem adicionada.</div>`;
+    else imgsB.slice(0,10).forEach(u=> gallery += `<div class="gi"><img src="${u}"></div>`);
+    const month = new Date().toLocaleString('pt-BR',{month:'long',year:'numeric'});
+    return `
+      <header style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px dashed rgba(0,0,0,0.06);padding-bottom:10px;margin-bottom:14px">
+        <div><h2 style="font-family: 'Great Vibes', cursive;font-size:42px;margin:0;color:var(--red)">${title}</h2><div style="color:#333;margin-top:6px">${meta}</div></div>
+        <div style="text-align:right;color:#333">🎄 ${month}</div>
+      </header>
+      <div style="font-size:18px;line-height:1.7;color:#222;white-space:pre-wrap">${escapeHtml(m)}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:16px">${gallery}</div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px dotted #ccc;color:#444">Com carinho,<br><strong>${escapeHtml(fr)}</strong></div>
+    `;
+  }
+
+  function escapeHtml(t){ return t.replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
+
+  function startSnow(){
+    snow.innerHTML=''; const count = 40;
+    for(let i=0;i<count;i++){
+      const s = document.createElement('i'); s.style.left = Math.random()*100+'%'; s.style.width = (3+Math.random()*8)+'px'; s.style.height = s.style.width; s.style.opacity = (0.4+Math.random()*0.8); s.style.animationDuration = (6+Math.random()*8)+'s'; s.style.animationDelay = (Math.random()*4)+'s';
+      snow.appendChild(s);
+    }
+  }
+
+  view.addEventListener('click', ()=>{ content.innerHTML = generateHTML(); startSnow(); overlay.classList.add('is-active'); setTimeout(()=> overlay.classList.add('open'),60); });
+  close.addEventListener('click', ()=>{ overlay.classList.remove('open'); setTimeout(()=> overlay.classList.remove('is-active'),700); });
+  overlay.addEventListener('click', e=> { if(e.target===overlay) { overlay.classList.remove('open'); setTimeout(()=> overlay.classList.remove('is-active'),700); }});
+  clearBtn.addEventListener('click', ()=>{ nameB.value=''; fromB.value=''; toB.value=''; msgB.value=''; imgsB=[]; thumbsB.innerHTML=''; photosB.value=null; });
+
+  pdfBtn.addEventListener('click', async ()=>{
+    content.innerHTML = generateHTML();
+    const clone = document.getElementById('cardB').cloneNode(true);
+    const ab = clone.querySelector('div[style*="display:flex"]'); if(ab) ab.remove();
+    clone.style.position='absolute'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.transform='none'; clone.style.opacity='1'; clone.style.boxShadow='none'; clone.style.border='none'; clone.style.width='820px';
+    document.body.appendChild(clone);
+    try{
+      const canvas = await html2canvas(clone, {scale:2, useCORS:true, backgroundColor:null});
+      const img = canvas.toDataURL('image/jpeg',0.95);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({unit:'pt',format:'a4'});
+      const w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
+      const pxW = canvas.width, pxH = canvas.height;
+      const ratio = Math.min(w/pxW, h/pxH);
+      const imgW = pxW*ratio, imgH = pxH*ratio;
+      if(imgH <= h-40) pdf.addImage(img,'JPEG',(w-imgW)/2,20,imgW,imgH);
+      else {
+        const pageCanvas = document.createElement('canvas'), ctx = pageCanvas.getContext('2d');
+        pageCanvas.width = pxW; pageCanvas.height = Math.floor((h-40)/ratio);
+        let y=0; let rem=pxH; let page=0;
+        while(rem>0){
+          ctx.clearRect(0,0,pageCanvas.width,pageCanvas.height);
+          ctx.drawImage(canvas,0,y,pageCanvas.width,pageCanvas.height,0,0,pageCanvas.width,pageCanvas.height);
+          const part = pageCanvas.toDataURL('image/jpeg',0.95);
+          if(page>0) pdf.addPage();
+          pdf.addImage(part,'JPEG',(w-imgW)/2,20,imgW,pageCanvas.height*ratio);
+          y+=pageCanvas.height; rem-=pageCanvas.height; page++;
         }
+      }
+      const safe = (nameB.value.trim()||'cartinha').replace(/[^a-z0-9_-]/gi,'_');
+      pdf.save(`${safe}_encantado.pdf`);
+    }catch(err){console.error(err);alert('Erro ao gerar PDF');}
+    finally{ document.body.removeChild(clone); }
+  });
 
-        photosInput.addEventListener('change', (e)=> readFiles(e.target.files));
-
-        // Drag & drop simples na própria janela
-        document.body.addEventListener('dragover', (e)=>{ e.preventDefault(); });
-        document.body.addEventListener('drop', (e)=>{ e.preventDefault(); if(e.dataTransfer.files) readFiles(e.dataTransfer.files); });
-
-        function generateCartaHTML(){
-            const name = nameInput.value.trim() || 'Amigo(a)';
-            const from = fromInput.value.trim() || nameInput.value.trim() || 'Um amigo';
-            const to = toInput.value.trim();
-            const email = emailInput.value.trim();
-            const msg = msgInput.value.trim() || 'Boas festas!';
-            
-            const title = to ? `Para meu querido(a) ${to}` : 'Feliz Natal!';
-            let meta = name;
-            if(email) meta += ' • ' + email;
-            
-            // Cria o HTML interno da carta
-            let galleryHtml = '';
-            if(images.length === 0){
-                galleryHtml = `<div style="width:100%;text-align:center;color:#b08d4a;padding:30px;border-radius:8px;background:#fff8e1;border:1px dashed #ffe0b2;">Nenhuma imagem adicionada. Adicione até 10 para enfeitar sua cartinha!</div>`;
-            } else {
-                images.slice(0,10).forEach(url=>{
-                    galleryHtml += `<div class="gi"><img src="${url}" alt="Foto de Natal"></div>`;
-                });
-            }
-
-            return `
-                <header>
-                    <div>
-                        <h2 id="cartaTitle">${title}</h2>
-                        <div class="meta">${meta}</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div class="meta">🎄 Dezembro, 2025</div>
-                    </div>
-                </header>
-                <div class="message">${msg}</div>
-                <div class="gallery">${galleryHtml}</div>
-                <div class="footer-note">Com todo o carinho,<br><strong>${from}</strong></div>
-            `;
-        }
-        
-        // Função que aciona a animação
-        function viewAnimatedCarta() {
-            // 1. Atualiza o conteúdo da carta principal e da carta "saindo"
-            const cartaContentHTML = generateCartaHTML();
-            cartaContent.innerHTML = cartaContentHTML;
-            letterInEnvelope.innerHTML = `<div style="padding:10px; font-size:12px; text-align:center; color:#555;">${nameInput.value || 'Mensagem'} para ${toInput.value || 'Amigo(a)'}</div>`;
-            
-            // 2. Reseta a classe 'open' e mostra o overlay
-            cartaOverlay.classList.remove('open');
-            cartaOverlay.classList.add('is-active');
-            
-            // 3. Aguarda um pouco e aciona a animação de abertura
-            setTimeout(() => {
-                cartaOverlay.classList.add('open');
-            }, 50); // Pequeno delay para garantir que o display 'flex' seja aplicado
-        }
-        
-        // Fecha o overlay
-        function closeCarta() {
-            cartaOverlay.classList.remove('open');
-            // Esconde depois que a animação de fechamento terminar
-            setTimeout(() => {
-                cartaOverlay.classList.remove('is-active');
-            }, 1000); // Tempo ajustado para as transições
-        }
-
-        viewAnimatedBtn.addEventListener('click', viewAnimatedCarta);
-        closeBtn.addEventListener('click', closeCarta);
-        cartaOverlay.addEventListener('click', (e) => {
-            if (e.target === cartaOverlay) {
-                closeCarta(); // Fecha se clicar fora da carta/envelope
-            }
-        });
-
-        // ----------------------------------------------------
-        // Funções de Download
-        // ----------------------------------------------------
-        
-        // gerar PDF usando html2canvas + jsPDF
-        pdfBtn.addEventListener('click', async ()=>{
-            // Garante que o conteúdo da carta está atualizado
-            cartaContent.innerHTML = generateCartaHTML();
-
-            // Clonar o main-carta para evitar interferir na visualização ativa e para isolar o estilo
-            const cartaForPDF = mainCarta.cloneNode(true);
-            cartaForPDF.style.position = 'absolute'; // Posição absoluta para não interferir no layout
-            cartaForPDF.style.top = '-9999px'; // Fora da tela
-            cartaForPDF.style.left = '-9999px';
-            cartaForPDF.style.transform = 'none'; // Reseta transformações
-            cartaForPDF.style.opacity = '1';
-            cartaForPDF.style.visibility = 'visible';
-            cartaForPDF.style.zIndex = '-1'; // Esconde atrás de tudo
-            cartaForPDF.style.boxShadow = 'none'; // Remove sombra para PDF
-            cartaForPDF.style.border = 'none'; // Remove borda para PDF
-            cartaForPDF.style.maxWidth = 'initial';
-            cartaForPDF.style.width = '800px'; // Tamanho fixo para PDF
-            cartaForPDF.style.height = 'auto'; // Altura automática
-            cartaForPDF.style.maxHeight = 'initial'; // Remove limite de altura
-
-            // Remove os botões de ação que não são necessários no PDF
-            const actionButtons = cartaForPDF.querySelector('.carta-action-buttons');
-            if (actionButtons) actionButtons.remove();
-
-            // Adiciona um padding e fundo branco para o PDF
-            const tempWrapper = document.createElement('div');
-            tempWrapper.style.padding = '50px';
-            tempWrapper.style.background = 'white';
-            tempWrapper.appendChild(cartaForPDF);
-            document.body.appendChild(tempWrapper);
-
-
-            // Geração do Canvas
-            const scale = 2; // melhora qualidade
-            const canvas = await html2canvas(cartaForPDF, {scale, useCORS:true, scrollY:-window.scrollY});
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            
-            document.body.removeChild(tempWrapper); // Remove o elemento temporário
-
-            // Geração do PDF
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-
-            const imgProps = { width: canvas.width, height: canvas.height };
-            const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
-            const imgW = imgProps.width * ratio;
-            const imgH = imgProps.height * ratio;
-
-            if(imgH <= pdfHeight){
-                pdf.addImage(imgData, 'JPEG', (pdfWidth - imgW) / 2, 20, imgW, imgH);
-            } else {
-                 // Lógica de múltiplas páginas
-                let remainingHeight = imgProps.height;
-                let position = 0;
-                const pageCanvas = document.createElement('canvas');
-                const pageCtx = pageCanvas.getContext('2d');
-                pageCanvas.width = imgProps.width;
-                pageCanvas.height = Math.floor((pdfHeight / ratio));
-
-                while(remainingHeight > 0){
-                    pageCtx.clearRect(0,0,pageCanvas.width,pageCanvas.height);
-                    pageCtx.drawImage(canvas, 0, position, pageCanvas.width, pageCanvas.height, 0, 0, pageCanvas.width, pageCanvas.height);
-                    const pieceData = pageCanvas.toDataURL('image/jpeg', 0.95);
-                    if(position > 0) pdf.addPage();
-                    pdf.addImage(pieceData, 'JPEG', (pdfWidth - imgW)/2, 20, imgW, pageCanvas.height * ratio);
-                    position += pageCanvas.height;
-                    remainingHeight -= pageCanvas.height;
-                }
-            }
-
-            const safeName = (nameInput.value.trim() || 'cartinha').replace(/[^a-z0-9_-]/gi,'_');
-            pdf.save(`${safeName}_cartinha_natal.pdf`);
-        });
-
-        // download HTML da carta (gera um arquivo .html com o conteúdo da carta)
-        downloadHtmlBtn.addEventListener('click', ()=>{
-            // Garante que o conteúdo da carta está atualizado
-            const cartaHtmlContent = generateCartaHTML();
-
-            // Adiciona os estilos necessários para o arquivo HTML de download
-            const dochtml = `<!doctype html>
-                <html>
-                <head>
-                    <meta charset=\"utf-8\">
-                    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">
-                    <title>Cartinha de Natal</title>
-                    <link href=\"https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600;700&display=swap\" rel=\"stylesheet\">
-                    <style>
-                        body { font-family: 'Inter', Arial, Helvetica, sans-serif; padding: 40px; background: #f7f9f7; }
-                        .main-carta { max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 16px; border: 8px solid #d32f2f; background: #fffaf0; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-                        .main-carta header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #ddd; padding-bottom: 15px; margin-bottom: 20px; }
-                        .main-carta h2 { margin: 0; font-family: 'Great Vibes', cursive; font-size: 38px; color: #d32f2f; font-weight: 400; }
-                        .main-carta .message { white-space: pre-wrap; font-size: 19px; line-height: 1.65; color: #222; margin-top: 20px; }
-                        .main-carta .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-top: 30px; }
-                        .main-carta .gallery .gi { height: 160px; overflow: hidden; border-radius: 10px; }
-                        .main-carta .gallery img { width: 100%; height: 100%; object-fit: cover; }
-                        .footer-note { margin-top: 30px; font-size: 17px; color: #444; padding-top: 15px; border-top: 1px dotted #ccc; }
-                        @media(max-width:600px){ .main-carta { padding: 20px; } .main-carta h2 { font-size: 28px; } .main-carta .gallery { grid-template-columns: 1fr; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="main-carta">${cartaHtmlContent}</div>
-                </body>
-                </html>`;
-                
-            const blob = new Blob([dochtml], {type:'text/html'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = (nameInput.value.trim() || 'cartinha') + '_cartinha_natal.html'; a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        clearBtn.addEventListener('click', () => {
-            nameInput.value = '';
-            fromInput.value = '';
-            toInput.value = '';
-            emailInput.value = '';
-            msgInput.value = 'Que a magia do Natal ilumine seu coração com paz, amor e esperança. Que cada sorriso compartilhado renove seus sonhos e fortaleça sua fé. Que o ano que chega seja leve, doce e cheio de conquistas. Feliz Natal!';
-            photosInput.value = null;
-            images = [];
-            thumbs.innerHTML = '';
-        });
-        
-    </script>
+  htmlBtn.addEventListener('click', ()=>{
+    const inner = generateHTML();
+    const full = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cartinha Encantada</title><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"><style>body{font-family:Poppins,Arial,sans-serif;background:#f7fbff;padding:28px}.main{max-width:820px;margin:0 auto;padding:34px;border-radius:12px;background:${getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#fffdf6'};border:10px solid ${getComputedStyle(document.documentElement).getPropertyValue('--red')||'#c62828'}}</style></head><body><div class="main">${inner}</div></body></html>`;
+    const blob = new Blob([full],{type:'text/html'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=(nameB.value.trim()||'cartinha')+'_encantado.html'; a.click(); URL.revokeObjectURL(url);
+  });
+</script>
 </body>
 </html>

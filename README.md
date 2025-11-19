@@ -1,2 +1,0 @@
-# natal
-carta de natal
